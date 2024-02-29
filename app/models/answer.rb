@@ -7,6 +7,14 @@ class Answer < ApplicationRecord
         Answer.create(quiz_id: quiz.id, answer_text: input_text, answer_succeed: is_answer_succeed?(input_text))
     end
 
+    def one_quiz_to_answer_num(user_line_id)
+        user_id = User.find_by(user_line_id: user_line_id).id
+        now_quiz_id=Quiz.where(user_id: user_id).order(updated_at: :desc).limit(1)
+        Answer.where(quiz_id: now_quiz_id).count
+    end
+
+    private 
+
     def is_answer_succeed? input_text
         return false if is_kanji? input_text 
         if is_kana? input_text
@@ -20,8 +28,6 @@ class Answer < ApplicationRecord
             false
         end
     end
-
-    private 
 
     def to_kana(text)
         text.tr('ぁ-ん','ァ-ン')
