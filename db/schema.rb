@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2024_02_29_042852) do
     t.string "line_user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["line_user_id"], name: "index_users_on_line_user_id", unique: true
   end
 
   create_table "widgets", force: :cascade do |t|
