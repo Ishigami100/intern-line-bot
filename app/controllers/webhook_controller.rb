@@ -24,15 +24,21 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          message = {
-            type: 'text',
-            text: event.message['text']
-          }
-          client.reply_message(event['replyToken'], message)
-        when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
-          response = client.get_message_content(event.message['id'])
-          tf = Tempfile.open("content")
-          tf.write(response.body)
+          line_user_id = event['source']['userId']
+          #入力文字で条件分岐
+          if event.message['text'] == "スタート"
+            #lineのuser_idが存在しない場合に追加する
+            if !User.exists?(line_user_id: line_user_id)
+              User.create(line_user_id: line_user_id)
+            end
+            quiz=Quiz.start_quiz(line_user_id)
+            client.reply_message(event['replyToken'],quiz.image_message)
+            client.push_message(line_user_id,quiz.question_message)
+          else
+            user=User.find_by(line_user_id: line_user_id)
+            user.current_quiz.answer(answer_text: event.message['text'])
+            client.reply_message(event['replyToken'],user.current_quiz.reply_message)
+          end
         end
       end
     }
