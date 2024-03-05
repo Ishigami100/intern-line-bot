@@ -30,8 +30,8 @@ class Quiz < ApplicationRecord
         image_path = 'images/gray'+pokemon_id.to_s+'.png'
         image_message = {
             type: 'image',
-            originalContentUrl: asset_url(image_path), 
-            previewImageUrl: asset_url(image_path)
+            originalContentUrl: 
+            previewImageUrl: 
         }
     end
 
