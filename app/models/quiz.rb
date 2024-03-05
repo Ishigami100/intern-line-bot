@@ -14,6 +14,41 @@ class Quiz < ApplicationRecord
         answers.create(quiz_id: self.quiz_id,answer_text: answer_text,answer_succeed: self.is_answer_succeed?(answer_text))
     end
 
+    def create_question_message
+        now_quiz_pokemon_id = quiz.where(user_id: user_id).last.pokemon_id
+
+        question_message = {
+            type: 'text',
+            text: '問題！このポケモンはなんでしょう？ '+now_quiz_pokemon_id
+        }
+    end
+
+    def create_image_message
+        now_quiz_pokemon_id = quiz.where(user_id: user_id).last.pokemon_id
+        
+        image_message = {
+            type: 'image',
+            originalContentUrl: 'https://cdn.shibe.online/shibes/907fed97467e36f3075211872d98f407398126c4.jpg', 
+            previewImageUrl: 'https://cdn.shibe.online/shibes/907fed97467e36f3075211872d98f407398126c4.jpg'
+        }
+    end
+
+    def create_reply_message
+        if answers.last == true
+            message = '正解！！'
+        else
+            if answers.count ==  CHALLENGE_UPPER_LIMIT
+                message = '残念でした。また次回挑戦してください。'
+            else
+                message =  '違います。再度答えを入力してください。'
+            end
+        end
+        question_message = {
+            type: 'text',
+            text: message
+        }
+    end
+
     private 
 
     def self.random_pokemon_id
