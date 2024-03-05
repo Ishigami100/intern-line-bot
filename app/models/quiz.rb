@@ -36,7 +36,7 @@ class Quiz < ApplicationRecord
     end
 
     def reply_message
-        if answers.last == true
+        if answers.last.answer_succeed == true
             message = '正解！！'
         else
             if answers.count >=  CHALLENGE_UPPER_LIMIT
