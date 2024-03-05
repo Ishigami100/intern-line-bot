@@ -11,7 +11,7 @@ class Quiz < ApplicationRecord
     end
 
     def answer(answer_text:)
-        answers.create(quiz_id: self.quiz_id,answer_text: answer_text,answer_succeed: self.is_answer_succeed?(answer_text))
+        answers.create(quiz_id: self.id,answer_text: answer_text,answer_succeed: is_answer_succeed?(answer_text))
     end
 
     def one_quiz_to_answer_num(user_line_id)
@@ -19,15 +19,14 @@ class Quiz < ApplicationRecord
     end
 
     def question_message
-
+        str = '問題！このポケモンはなんでしょう？ '+pokemon_id
         question_message = {
             type: 'text',
-            text: '問題！このポケモンはなんでしょう？ '+pokemon_id
+            text: str
         }
     end
 
     def image_message
-        
         image_message = {
             type: 'image',
             originalContentUrl: 'https://cdn.shibe.online/shibes/907fed97467e36f3075211872d98f407398126c4.jpg', 
@@ -57,17 +56,17 @@ class Quiz < ApplicationRecord
         rand(1..MAX_POKEMON_ID)
     end
 
-    def self.is_answer_succeed?(input_text)
+    def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
         answer_text = "ピカチュウ" #仮
-        if  text == answer_text
+        if  input_text == answer_text
             true
         else
             false
         end
     end
 
-    def self.validate_text?(input_text)
+    def validate_text?(input_text)
         return false if is_katakana?(input_text)
         #ここにvalidatonを追記する
         return true
@@ -91,7 +90,7 @@ class Quiz < ApplicationRecord
     end
 
     #カタカナ？
-    def self.is_katakana?(text)
+    def is_katakana?(text)
         return true if text =~ /\A[ァ-ヶー－]+\z/
         false
     end 
