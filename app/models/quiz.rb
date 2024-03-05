@@ -14,12 +14,12 @@ class Quiz < ApplicationRecord
         answers.create(quiz_id: self.id,answer_text: answer_text,answer_succeed: is_answer_succeed?(answer_text))
     end
 
-    def one_quiz_to_answer_num(user_line_id)
+    def one_quiz_to_answer_num
         answers.count
     end
 
     def question_message
-        str = '問題！このポケモンはなんでしょう？ '+pokemon_id
+        str = '問題！このポケモンはなんでしょう？ '+pokemon_id.to_s
         question_message = {
             type: 'text',
             text: str
@@ -27,10 +27,11 @@ class Quiz < ApplicationRecord
     end
 
     def image_message
+        image_path = 'images/gray'+pokemon_id.to_s+'.png'
         image_message = {
             type: 'image',
-            originalContentUrl: 'https://cdn.shibe.online/shibes/907fed97467e36f3075211872d98f407398126c4.jpg', 
-            previewImageUrl: 'https://cdn.shibe.online/shibes/907fed97467e36f3075211872d98f407398126c4.jpg'
+            originalContentUrl: asset_url(image_path), 
+            previewImageUrl: asset_url(image_path)
         }
     end
 
