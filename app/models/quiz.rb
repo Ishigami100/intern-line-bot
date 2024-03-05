@@ -6,7 +6,7 @@ class Quiz < ApplicationRecord
     has_many :answers
 
     def insert_quiz(user_line_id)
-        user_id = User.find_by(user_line_id: user_line_id).id
+        user_id = User.find_by!(user_line_id: user_line_id).id
         Quiz.create(user_id: user_id, pokemon_id: random_pokemon_id, challenge_upper_limit: CHALLENGE_UPPER_LIMIT)
     end
 
