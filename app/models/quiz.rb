@@ -14,17 +14,19 @@ class Quiz < ApplicationRecord
         answers.create(quiz_id: self.quiz_id,answer_text: answer_text,answer_succeed: self.is_answer_succeed?(answer_text))
     end
 
-    def create_question_message
-        now_quiz_pokemon_id = quiz.where(user_id: user_id).last.pokemon_id
+    def one_quiz_to_answer_num(user_line_id)
+        answers.count
+    end
+
+    def question_message
 
         question_message = {
             type: 'text',
-            text: '問題！このポケモンはなんでしょう？ '+now_quiz_pokemon_id
+            text: '問題！このポケモンはなんでしょう？ '+pokemon_id
         }
     end
 
-    def create_image_message
-        now_quiz_pokemon_id = quiz.where(user_id: user_id).last.pokemon_id
+    def image_message
         
         image_message = {
             type: 'image',
@@ -33,11 +35,11 @@ class Quiz < ApplicationRecord
         }
     end
 
-    def create_reply_message
+    def reply_message
         if answers.last == true
             message = '正解！！'
         else
-            if answers.count ==  CHALLENGE_UPPER_LIMIT
+            if answers.count >=  CHALLENGE_UPPER_LIMIT
                 message = '残念でした。また次回挑戦してください。'
             else
                 message =  '違います。再度答えを入力してください。'
