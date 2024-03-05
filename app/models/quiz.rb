@@ -11,7 +11,44 @@ class Quiz < ApplicationRecord
     end
 
     def answer(answer_text:)
-        answers.create(quiz_id: self.quiz_id,answer_text: answer_text,answer_succeed: self.is_answer_succeed?(answer_text))
+        answers.create(quiz_id: self.id,answer_text: answer_text,answer_succeed: is_answer_succeed?(answer_text))
+    end
+
+    def one_quiz_to_answer_num
+        answers.count
+    end
+
+    def question_message
+        str = '問題！このポケモンはなんでしょう？ '+pokemon_id.to_s
+        question_message = {
+            type: 'text',
+            text: str
+        }
+    end
+
+    def image_message
+        image_path = 'images/gray'+pokemon_id.to_s+'.png'
+        image_message = {
+            type: 'image',
+            originalContentUrl: 
+            previewImageUrl: 
+        }
+    end
+
+    def reply_message
+        if answers.last.answer_succeed == true
+            message = '正解！！'
+        else
+            if answers.count >=  CHALLENGE_UPPER_LIMIT
+                message = '残念でした。また次回挑戦してください。'
+            else
+                message =  '違います。再度答えを入力してください。'
+            end
+        end
+        question_message = {
+            type: 'text',
+            text: message
+        }
     end
 
     private 
@@ -20,17 +57,17 @@ class Quiz < ApplicationRecord
         rand(1..MAX_POKEMON_ID)
     end
 
-    def self.is_answer_succeed?(input_text)
+    def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
         answer_text = "ピカチュウ" #仮
-        if  text == answer_text
+        if  input_text == answer_text
             true
         else
             false
         end
     end
 
-    def self.validate_text?(input_text)
+    def validate_text?(input_text)
         return false if is_katakana?(input_text)
         #ここにvalidatonを追記する
         return true
@@ -54,7 +91,7 @@ class Quiz < ApplicationRecord
     end
 
     #カタカナ？
-    def self.is_katakana?(text)
+    def is_katakana?(text)
         return true if text =~ /\A[ァ-ヶー－]+\z/
         false
     end 
