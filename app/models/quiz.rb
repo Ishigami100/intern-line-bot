@@ -105,7 +105,7 @@ class Quiz < ApplicationRecord
         url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{self.pokemon_id.to_s}"
         client = HTTPClient.new                 # インスタンスを生成
         response = client.get(url)   
-        results=JSON.parse(response.body) 
+        JSON.parse(response.body) 
     end
 
     def pokemon_name_jp
@@ -138,7 +138,7 @@ class Quiz < ApplicationRecord
         return "Not Found"
     end
 
-    def pokemon_text_jp(pokemon_id)
+    def pokemon_text_jp
         results=pokemon_species
         results['flavor_text_entries'].each do |flavor_text_entries_info|
             if flavor_text_entries_info['language']['name']== "ja" || flavor_text_entries_info['language']['name'] == "ja-Hrkt"
@@ -148,8 +148,8 @@ class Quiz < ApplicationRecord
         return "Not Found"
     end
 
-    def pokemon_type_jp(pokemon_id)
-        url = "#{BASE_URL}#{POKEMON_URL}#{pokemon_id.to_s}"
+    def pokemon_type_jp
+        url = "#{BASE_URL}#{POKEMON_URL}#{self.pokemon_id.to_s}"
         types=[]
         client = HTTPClient.new                 # インスタンスを生成
         response = client.get(url)   
