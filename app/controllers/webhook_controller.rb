@@ -25,15 +25,14 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           line_user_id = event['source']['userId']
+          #lineのuser_idが存在しない場合に追加する
+          user = User.find_or_created_by(line_user_id: line_user_id)
           #入力文字で条件分岐
           if event.message['text'] == "スタート"
-            #lineのuser_idが存在しない場合に追加する
-            User.find_or_created_by(line_user_id: line_user_id)
             quiz=Quiz.start_quiz(line_user_id)
             client.reply_message(event['replyToken'],quiz.image_message)
             client.push_message(line_user_id,quiz.question_message)
           else
-            user=User.find_by!(line_user_id: line_user_id)
             user.current_quiz.answer(answer_text: event.message['text'])
             client.reply_message(event['replyToken'],user.current_quiz.reply_message)
           end
