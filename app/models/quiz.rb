@@ -101,11 +101,15 @@ class Quiz < ApplicationRecord
         false
     end 
 
-    def pokemon_name_jp(pokemon_id)
-        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
+    def pokemon_species
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{self.pokemon_id.to_s}"
         client = HTTPClient.new                 # インスタンスを生成
         response = client.get(url)   
         results=JSON.parse(response.body) 
+    end
+
+    def pokemon_name_jp
+        results=pokemon_species
         results['names'].each do |name_info|
             if name_info['language']['name'] == 'ja-Hrkt'
                 return name_info['name']
@@ -114,11 +118,8 @@ class Quiz < ApplicationRecord
         return "Not Found"
     end
 
-    def pokemon_name_en(pokemon_id)
-        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
-        client = HTTPClient.new                 # インスタンスを生成
-        response = client.get(url)   
-        results=JSON.parse(response.body) 
+    def pokemon_name_en
+        results=pokemon_species
         results['names'].each do |name_info|
             if name_info['language']['name'] == 'en'
                 return name_info['name']
@@ -127,11 +128,8 @@ class Quiz < ApplicationRecord
         return "Not Found"
     end
 
-    def pokemon_name_ch(pokemon_id)
-        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
-        client = HTTPClient.new                 # インスタンスを生成
-        response = client.get(url)   
-        results=JSON.parse(response.body) 
+    def pokemon_name_ch
+        results=pokemon_species
         results['names'].each do |name_info|
             if name_info['language']['name'] == 'zh-Hant'
                 return name_info['name']
@@ -141,10 +139,7 @@ class Quiz < ApplicationRecord
     end
 
     def pokemon_text_jp(pokemon_id)
-        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
-        client = HTTPClient.new                 # インスタンスを生成
-        response = client.get(url)   
-        results=JSON.parse(response.body) 
+        results=pokemon_species
         results['flavor_text_entries'].each do |flavor_text_entries_info|
             if flavor_text_entries_info['language']['name']== "ja" || flavor_text_entries_info['language']['name'] == "ja-Hrkt"
                 return flavor_text_entries_info['flavor_text']
