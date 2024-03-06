@@ -5,8 +5,8 @@ class Quiz < ApplicationRecord
     belongs_to :user 
     has_many :answers
 
-    def self.start_quiz(user_id)
-        Quiz.create(user_id: user_id, pokemon_id: random_pokemon_id, challenge_upper_limit: CHALLENGE_UPPER_LIMIT)
+    def self.start_quiz(user)
+        Quiz.create(user_id: user.id, pokemon_id: random_pokemon_id, challenge_upper_limit: CHALLENGE_UPPER_LIMIT)
     end
 
     def answer(answer_text:)
@@ -26,7 +26,7 @@ class Quiz < ApplicationRecord
     end
 
     def image_message(base_url)
-        image_url = base_url+ActionController::Base.helpers.asset_url('gray/'+format("%03d", pokemon_id)+'.png')
+        image_url = "#{base_url}#{ActionController::Base.helpers.asset_url('gray/'+format("%03d", pokemon_id))}"
         image_message = {
             type: 'image',
             originalContentUrl: image_url,

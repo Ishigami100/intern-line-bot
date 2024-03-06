@@ -29,7 +29,7 @@ class WebhookController < ApplicationController
           user = User.find_or_create_by(line_user_id: line_user_id)
           #入力文字で条件分岐
           if event.message['text'] == "スタート"
-            quiz=Quiz.start_quiz(user.id)
+            quiz=Quiz.start_quiz(user)
             client.reply_message(event['replyToken'],quiz.image_message(request.base_url))
             client.push_message(line_user_id,quiz.question_message)
           else
