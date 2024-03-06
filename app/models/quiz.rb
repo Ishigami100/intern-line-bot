@@ -64,7 +64,7 @@ class Quiz < ApplicationRecord
 
     def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
-        answer_text = pokemon_name_jp(self.pokemon_id)
+        answer_text = pokemon_name('ja-Hrkt')
         if  input_text == answer_text
             true
         else
@@ -101,38 +101,38 @@ class Quiz < ApplicationRecord
         false
     end 
 
+    def http_client 
+        @http_client ||= HTTPClient.new 
+    end
+
     def pokemon_species
-        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{self.pokemon_id.to_s}"
-        client = HTTPClient.new                 # インスタンスを生成
-        response = client.get(url)   
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{self.pokemon_id.to_s}"               # インスタンスを生成
+        response = http_client.get(url)   
         JSON.parse(response.body) 
     end
 
     def pokemon_name(language) #'en' 'zh-Hant' 'ja-Hrkt'
-        results=pokemon_species
-        results['names'].each do |name_info|
-            if name_info['language']['name'] == language
-                return name_info['name']
-            end
+        results = pokemon_species
+        name_info = results['names'].find{|name_info| name_info['language']['name'] == language}
+        if name_info.nil?
+            return "Not Found"
         end
-        return "Not Found"
+        return name_info['name']
     end
 
     def pokemon_text_jp
-        results=pokemon_species
-        results['flavor_text_entries'].each do |flavor_text_entries_info|
-            if flavor_text_entries_info['language']['name']== "ja" || flavor_text_entries_info['language']['name'] == "ja-Hrkt"
-                return flavor_text_entries_info['flavor_text']
-            end
+        results = pokemon_species
+        flavor_text_entries_info = results['flavor_text_entries'].find{|flavor_text_entries_info|cflavor_text_entries_info['language']['name'] == "ja-Hrkt"}
+        if flavor_text_entries_info.nil?
+            return "Not Found"
         end
-        return "Not Found"
+        return flavor_text_entries_info['flavor_text']
     end
 
     def pokemon_type_jp
         url = "#{BASE_URL}#{POKEMON_URL}#{self.pokemon_id.to_s}"
-        types=[]
-        client = HTTPClient.new                 # インスタンスを生成
-        response = client.get(url)   
+        types=[]       
+        response = http_client.get(url)   
         results=JSON.parse(response.body) 
         results['types'].each do |type_en|
             response_type = client.get(type_en['type']['url'])
