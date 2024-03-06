@@ -32,6 +32,7 @@ class Quiz < ApplicationRecord
 
     def image_message(base_url)
         image_url = "#{base_url}#{ActionController::Base.helpers.asset_url('gray/'+format("%03d", pokemon_id))}"
+        p image_url
         image_message = {
             type: 'image',
             originalContentUrl: image_url,
