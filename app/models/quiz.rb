@@ -136,12 +136,10 @@ class Quiz < ApplicationRecord
         results=JSON.parse(response.body) 
         results['types'].each do |type_en|
             response_type = client.get(type_en['type']['url'])
-            results_type=JSON.parse(response_type.body)
-            results_type['names'].each do |type_name|
-                p type_name
-                if type_name['language']['name'] == "ja-Hrkt"
-                    types.push(type_name['name'])
-                end
+            results_type = JSON.parse(response_type.body)
+            type_name = results_type['names'].find{|type_name| type_name['language']['name'] == "ja-Hrkt"}
+            if !type_name.nil?
+                types.push(type_name['name'])
             end
         end
         return types
