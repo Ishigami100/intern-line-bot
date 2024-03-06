@@ -34,7 +34,7 @@ class Quiz < ApplicationRecord
 
     def image_message(base_url)
         silhouette = Utils::Silhouette.new
-        filename=silhouette.image_to_silhouette(self.pokemon_id)
+        filename=silhouette.image_to_silhouette(self.pokemon_id,self.user_id)
         image_url = "#{base_url}/grey/#{filename}"
         image_message = {
             type: 'image',
@@ -44,6 +44,9 @@ class Quiz < ApplicationRecord
     end
 
     def reply_message
+        if answers.count==1
+            silhouette.delete_image(self.pokemon_id,self.user_id)
+        end
         if answers.last.answer_succeed == true
             message = '正解！！'
         else
