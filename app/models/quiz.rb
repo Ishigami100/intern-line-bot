@@ -44,9 +44,6 @@ class Quiz < ApplicationRecord
     end
 
     def reply_message
-        if answers.count==1
-            silhouette.delete_image(self.pokemon_id,self.user_id)
-        end
         if answers.last.answer_succeed == true
             message = '正解！！'
         else
@@ -63,6 +60,12 @@ class Quiz < ApplicationRecord
     end
 
     private 
+
+    def delete_image_check
+        if answers.count==1
+            silhouette.delete_image(self.pokemon_id,self.user_id)
+        end
+    end
 
     def self.random_pokemon_id
         rand(1..MAX_POKEMON_ID)
