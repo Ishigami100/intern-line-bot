@@ -24,13 +24,15 @@ module Utils
             gaussblur_image = greyscale_image.gaussblur(0.1)
             bw_image = gaussblur_image.relational_const(:more,250)
             bw_image.~.write_to_file("public/grey/#{user_id}-#{pokemon_id}.jpg")
-            return "#{user_id}-#{pokemon_id}.jpg"
+            "#{user_id}-#{pokemon_id}.jpg"
         end
 
         def delete_image(pokemon_id,user_id)
-            if File.exist?("public/grey/#{user_id}-#{pokemon_id}.jpg")  # ファイルが存在するかどうか確認
-                File.delete("public/grey/#{user_id}-#{pokemon_id}.jpg") 
-                File.delete("public/pokemon/#{user_id}-#{pokemon_id}.png")  # ファイルを削除
+            if File.exist?("public/grey/#{user_id}-#{pokemon_id}.jpg")  
+                File.delete("public/grey/#{user_id}-#{pokemon_id}.jpg")   # ファイルを削除
+            end
+            if File.exist?("public/pokemon/#{user_id}-#{pokemon_id}.png")
+                File.delete("public/pokemon/#{user_id}-#{pokemon_id}.png")# ファイルを削除
             end
         end
     end
