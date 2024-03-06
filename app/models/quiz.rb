@@ -63,7 +63,6 @@ class Quiz < ApplicationRecord
 
     def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
-        p pokemon_type(1)
         answer_text = pokemon_name_jp(self.pokemon_id)
         if  input_text == answer_text
             true
