@@ -1,6 +1,11 @@
+require "httpclient"
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
-    MAX_POKEMON_ID = 150
+    MAX_POKEMON_ID = 151
+    
+    BASE_URL = "https://pokeapi.co/api/v2"
+    POKEMON_SPECIES_URL = "/pokemon-species/"
+    POKEMON_URL = "/pokemon/"
 
     belongs_to :user 
     has_many :answers
@@ -58,7 +63,8 @@ class Quiz < ApplicationRecord
 
     def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
-        answer_text = "ピカチュウ" #仮
+        p pokemon_type(1)
+        answer_text = pokemon_name_jp(self.pokemon_id)
         if  input_text == answer_text
             true
         else
@@ -94,4 +100,75 @@ class Quiz < ApplicationRecord
         return true if text =~ /\A[ァ-ヶー－]+\z/
         false
     end 
+
+    def pokemon_name_jp(pokemon_id)
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
+        client = HTTPClient.new                 # インスタンスを生成
+        response = client.get(url)   
+        results=JSON.parse(response.body) 
+        results['names'].each do |name_info|
+            if name_info['language']['name'] == 'ja-Hrkt'
+                return name_info['name']
+            end
+        end
+        return "Not Found"
+    end
+
+    def pokemon_name_en(pokemon_id)
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
+        client = HTTPClient.new                 # インスタンスを生成
+        response = client.get(url)   
+        results=JSON.parse(response.body) 
+        results['names'].each do |name_info|
+            if name_info['language']['name'] == 'en'
+                return name_info['name']
+            end
+        end
+        return "Not Found"
+    end
+
+    def pokemon_name_ch(pokemon_id)
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
+        client = HTTPClient.new                 # インスタンスを生成
+        response = client.get(url)   
+        results=JSON.parse(response.body) 
+        results['names'].each do |name_info|
+            if name_info['language']['name'] == 'zh-Hant'
+                return name_info['name']
+            end
+        end
+        return "Not Found"
+    end
+
+    def pokemon_text_jp(pokemon_id)
+        url = "#{BASE_URL}#{POKEMON_SPECIES_URL}#{pokemon_id.to_s}"
+        client = HTTPClient.new                 # インスタンスを生成
+        response = client.get(url)   
+        results=JSON.parse(response.body) 
+        results['flavor_text_entries'].each do |flavor_text_entries_info|
+            if flavor_text_entries_info['language']['name']== "ja" || flavor_text_entries_info['language']['name'] == "ja-Hrkt"
+                return flavor_text_entries_info['flavor_text']
+            end
+        end
+        return "Not Found"
+    end
+
+    def pokemon_type_jp(pokemon_id)
+        url = "#{BASE_URL}#{POKEMON_URL}#{pokemon_id.to_s}"
+        types=[]
+        client = HTTPClient.new                 # インスタンスを生成
+        response = client.get(url)   
+        results=JSON.parse(response.body) 
+        results['types'].each do |type_en|
+            response_type = client.get(type_en['type']['url'])
+            results_type=JSON.parse(response_type.body)
+            results_type['names'].each do |type_name|
+                p type_name
+                if type_name['language']['name'] == "ja-Hrkt"
+                    types.push(type_name['name'])
+                end
+            end
+        end
+        return types
+    end
 end
