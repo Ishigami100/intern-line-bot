@@ -3,7 +3,7 @@ require 'utils/silhouette'
 
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
-    MAX_POKEMON_ID = 151
+    MAX_POKEMON_ID = 500
     
     BASE_URL = "https://pokeapi.co/api/v2"
     POKEMON_SPECIES_URL = "/pokemon-species/"
@@ -33,7 +33,9 @@ class Quiz < ApplicationRecord
     end
 
     def image_message(base_url)
-        image_url = "#{base_url}#{ActionController::Base.helpers.asset_url('gray/'+format("%03d", pokemon_id))}"
+        silhouette = Utils::Silhouette.new
+        filename=silhouette.image_to_silhouette(self.pokemon_id)
+        image_url = "#{base_url}/grey/#{filename}"
         image_message = {
             type: 'image',
             originalContentUrl: image_url,
@@ -115,13 +117,13 @@ class Quiz < ApplicationRecord
     def pokemon_name(language) #'en' 'zh-Hant' 'ja-Hrkt'
         results = pokemon_species
         name_info = results['names'].find{|name_info| name_info['language']['name'] == language}
-        if name_info? name_info['name'] : "Not Found"
+        name_info ? name_info['name'] : "Not Found"
     end
 
     def pokemon_text_jp
         results = pokemon_species
         flavor_text_entries_info = results['flavor_text_entries'].find{|flavor_text_entries_info|cflavor_text_entries_info['language']['name'] == "ja-Hrkt"}
-        if flavor_text_entries_info?  flavor_text_entries_info['flavor_text'] : "Not Found"
+        flavor_text_entries_info ?  flavor_text_entries_info['flavor_text'] : "Not Found"
     end
 
     def pokemon_type_jp
