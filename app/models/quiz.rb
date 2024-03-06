@@ -108,30 +108,10 @@ class Quiz < ApplicationRecord
         JSON.parse(response.body) 
     end
 
-    def pokemon_name_jp
+    def pokemon_name(language) #'en' 'zh-Hant' 'ja-Hrkt'
         results=pokemon_species
         results['names'].each do |name_info|
-            if name_info['language']['name'] == 'ja-Hrkt'
-                return name_info['name']
-            end
-        end
-        return "Not Found"
-    end
-
-    def pokemon_name_en
-        results=pokemon_species
-        results['names'].each do |name_info|
-            if name_info['language']['name'] == 'en'
-                return name_info['name']
-            end
-        end
-        return "Not Found"
-    end
-
-    def pokemon_name_ch
-        results=pokemon_species
-        results['names'].each do |name_info|
-            if name_info['language']['name'] == 'zh-Hant'
+            if name_info['language']['name'] == language
                 return name_info['name']
             end
         end
