@@ -62,9 +62,7 @@ class Quiz < ApplicationRecord
     private 
 
     def delete_image_check
-        if answers.count==1
-            silhouette.delete_image(self.pokemon_id,self.user_id)
-        end
+        silhouette.delete_image(self.pokemon_id,self.user_id)
     end
 
     def self.random_pokemon_id
