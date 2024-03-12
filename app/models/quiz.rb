@@ -1,5 +1,4 @@
 require 'httpclient'
-require 'utils/silhouette'
 
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
