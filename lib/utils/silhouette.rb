@@ -7,7 +7,7 @@ module Utils
         def image_save(pokemon_id,user_id)
             url = "#{POKEMON_IMAGE_URL}/#{pokemon_id}.png"
             filename = File.basename(url)
-            open("public/pokemon/#{user_id}-#{filename}", 'w+b') do |output|
+            open("pokemon/#{user_id}-#{filename}", 'w+b') do |output|
                 URI.open(url) do |data|
                     output.puts(data.read)
                 end
