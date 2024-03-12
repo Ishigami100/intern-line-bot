@@ -1,8 +1,9 @@
 require 'httpclient'
+require 'utils/silhouette'
 
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
-    MAX_POKEMON_ID = 151
+    MAX_POKEMON_ID = 500
     
     BASE_URL = "https://pokeapi.co/api/v2"
     POKEMON_SPECIES_URL = "/pokemon-species/"
@@ -24,16 +25,27 @@ class Quiz < ApplicationRecord
     end
 
     def question_message
-        str = '問題！このポケモンはなんでしょう？ '+pokemon_id.to_s
+        str = '問題！このポケモンはな〜んだ？'
         question_message = {
             type: 'text',
             text: str
         }
     end
 
-    def image_message(base_url)
-        image_url = "#{base_url}/gray/#{format("%03d", pokemon_id)}.png"
-        p image_url
+    def image_message_start(base_url)
+        silhouette = Utils::Silhouette.new
+        filename=silhouette.image_to_silhouette(self.pokemon_id,self.user_id)
+        image_url = "#{base_url}/grey/#{filename}"
+        image_message = {
+            type: 'image',
+            originalContentUrl: image_url,
+            previewImageUrl:  image_url
+        }
+    end
+
+    def image_message_end(base_url)
+        filename="#{self.user_id}-#{self.pokemon_id}.png"
+        image_url = "#{base_url}/pokemon/#{filename}"
         image_message = {
             type: 'image',
             originalContentUrl: image_url,
@@ -43,12 +55,16 @@ class Quiz < ApplicationRecord
 
     def reply_message
         if answers.last.answer_succeed == true
-            message = '正解！！'
+            message = "正解!! #{pokemon_name('ja-Hrkt')}\n#{pokemon_name('ja-Hrkt')}の説明\n#{pokemon_text_jp}"
         else
             if answers.count >=  CHALLENGE_UPPER_LIMIT
-                message = '残念でした。また次回挑戦してください。'
+                message = "残念でした。また次回挑戦してください。"
+            elsif answers.count == 2
+                message =  "違います。再度答えを入力してください。ヒント：英語名は#{pokemon_name('en')}"
+            elsif answers.count == 4
+                message =  "違います。再度答えを入力してください。ヒント：タイプの一つは#{pokemon_type_jp[0]}"
             else
-                message =  '違います。再度答えを入力してください。'
+                message =  "違います。再度答えを入力してください。"
             end
         end
         question_message = {
@@ -57,11 +73,16 @@ class Quiz < ApplicationRecord
         }
     end
 
-    private 
-
-    def self.random_pokemon_id
-        rand(1..MAX_POKEMON_ID)
+    def delete_image_gray_check
+        silhouette = Utils::Silhouette.new
+        silhouette.delete_image_gray(self.pokemon_id,self.user_id)
     end
+
+    def delete_image_normal_check
+        silhouette = Utils::Silhouette.new
+        silhouette.delete_image_normal(self.pokemon_id,self.user_id)
+    end
+
 
     def is_answer_succeed?(input_text)
         return false if validate_text?(input_text)
@@ -71,6 +92,12 @@ class Quiz < ApplicationRecord
         else
             false
         end
+    end
+    
+    private 
+
+    def self.random_pokemon_id
+        rand(1..MAX_POKEMON_ID)
     end
 
     def validate_text?(input_text)
@@ -120,8 +147,8 @@ class Quiz < ApplicationRecord
 
     def pokemon_text_jp
         results = pokemon_species
-        flavor_text_entries_info = results['flavor_text_entries'].find{|flavor_text_entries_info|cflavor_text_entries_info['language']['name'] == "ja-Hrkt"}
-        flavor_text_entries_info ?  flavor_text_entries_info['flavor_text'] : "Not Found"
+        flavor_text_entries_info = results['flavor_text_entries'].find{|flavor_text_entries_info|flavor_text_entries_info['language']['name'] == "ja-Hrkt"}
+        flavor_text_entries_info ?  flavor_text_entries_info['flavor_text'].gsub(/\s/, "") : "Not Found"
     end
 
     def pokemon_type_jp
@@ -130,7 +157,7 @@ class Quiz < ApplicationRecord
         response = http_client.get(url)   
         results=JSON.parse(response.body) 
         results['types'].each do |type_en|
-            response_type = client.get(type_en['type']['url'])
+            response_type = http_client.get(type_en['type']['url'])
             results_type = JSON.parse(response_type.body)
             type_name = results_type['names'].find{|type_name| type_name['language']['name'] == "ja-Hrkt"}
             if !type_name.nil?

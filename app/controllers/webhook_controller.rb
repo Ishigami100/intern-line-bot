@@ -29,12 +29,26 @@ class WebhookController < ApplicationController
           user = User.find_or_create_by(line_user_id: line_user_id)
           #入力文字で条件分岐
           if event.message['text'] == "スタート"
-            quiz=Quiz.start_quiz(user)
-            client.reply_message(event['replyToken'],quiz.image_message(request.base_url))
-            client.push_message(line_user_id,quiz.question_message)
+            if user.current_quiz.answers.count >= Quiz::CHALLENGE_UPPER_LIMIT || (!user.current_quiz.answers.last.nil? && user.current_quiz.answers.last.answer_succeed == true)
+              quiz=Quiz.start_quiz(user)
+              client.reply_message(event['replyToken'],quiz.image_message_start(request.base_url))
+              client.push_message(line_user_id,quiz.question_message)
+            else
+              explain_text={
+                type: 'text',
+                text: 'まだ回答済みでない問題があります。確認してください。'
+              }
+              client.reply_message(event['replyToken'],explain_text)
+            end
           else
+            user.current_quiz.delete_image_gray_check
             user.current_quiz.answer(answer_text: event.message['text'])
-            client.reply_message(event['replyToken'],user.current_quiz.reply_message)
+            if user.current_quiz.reply_message[:text].include?("正解")
+              client.reply_message(event['replyToken'],user.current_quiz.image_message_end(request.base_url))
+              sleep(2)
+              user.current_quiz.delete_image_normal_check
+            end
+            client.push_message(line_user_id,user.current_quiz.reply_message)
           end
         end
       end
