@@ -30,12 +30,17 @@ class WebhookController < ApplicationController
           #入力文字で条件分岐
           if event.message['text'] == "スタート"
             quiz=Quiz.start_quiz(user)
-            client.reply_message(event['replyToken'],quiz.image_message(request.base_url))
+            client.reply_message(event['replyToken'],quiz.image_message_start(request.base_url))
             client.push_message(line_user_id,quiz.question_message)
           else
             user.current_quiz.delete_image_gray_check
             user.current_quiz.answer(answer_text: event.message['text'])
-            client.reply_message(event['replyToken'],user.current_quiz.reply_message)
+            if
+              user.current_quiz.reply_message == '正解！！'
+              client.reply_message(event['replyToken'],quiz.image_message_end(request.base_url))
+              user.current_quiz.delete_image_normal_check
+            end
+            client.push_message(event['replyToken'],user.current_quiz.reply_message)
           end
         end
       end

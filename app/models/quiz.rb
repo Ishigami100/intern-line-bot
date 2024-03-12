@@ -32,10 +32,20 @@ class Quiz < ApplicationRecord
         }
     end
 
-    def image_message(base_url)
+    def image_message_start(base_url)
         silhouette = Utils::Silhouette.new
         filename=silhouette.image_to_silhouette(self.pokemon_id,self.user_id)
         image_url = "#{base_url}/grey/#{filename}"
+        image_message = {
+            type: 'image',
+            originalContentUrl: image_url,
+            previewImageUrl:  image_url
+        }
+    end
+
+    def image_message_end(base_url)
+        filename="#{self.user_id}-#{self.pokemon_id}.png"
+        image_url = "#{base_url}/pokemon/#{filename}"
         image_message = {
             type: 'image',
             originalContentUrl: image_url,
