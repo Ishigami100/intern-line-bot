@@ -27,10 +27,13 @@ module Utils
             "#{user_id}-#{pokemon_id}.jpg"
         end
 
-        def delete_image(pokemon_id,user_id)
+        def delete_image_gray(pokemon_id,user_id)
             if File.exist?("public/grey/#{user_id}-#{pokemon_id}.jpg")  
                 File.delete("public/grey/#{user_id}-#{pokemon_id}.jpg")   # ファイルを削除
             end
+        end
+
+        def delete_image_normal(pokemon_id,user_id)
             if File.exist?("public/pokemon/#{user_id}-#{pokemon_id}.png")
                 File.delete("public/pokemon/#{user_id}-#{pokemon_id}.png")# ファイルを削除
             end

@@ -1,4 +1,5 @@
 require 'httpclient'
+require 'utils/silhouette'
 
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
@@ -60,8 +61,8 @@ class Quiz < ApplicationRecord
 
     private 
 
-    def delete_image_check
-        silhouette.delete_image(self.pokemon_id,self.user_id)
+    def delete_image_grey_check
+        silhouette.delete_image_grey(self.pokemon_id,self.user_id)
     end
 
     def self.random_pokemon_id

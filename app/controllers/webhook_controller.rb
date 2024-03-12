@@ -33,7 +33,7 @@ class WebhookController < ApplicationController
             client.reply_message(event['replyToken'],quiz.image_message(request.base_url))
             client.push_message(line_user_id,quiz.question_message)
           else
-            user.current_quiz.delete_image_check
+            user.current_quiz.delete_image_gray_check
             user.current_quiz.answer(answer_text: event.message['text'])
             client.reply_message(event['replyToken'],user.current_quiz.reply_message)
           end
