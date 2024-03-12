@@ -32,7 +32,7 @@ class Quiz < ApplicationRecord
     end
 
     def image_message(base_url)
-        image_url = "#{base_url}/public/gray/#{format("%03d", pokemon_id)}.png"
+        image_url = "#{base_url}/gray/#{format("%03d", pokemon_id)}.png"
         p image_url
         image_message = {
             type: 'image',
