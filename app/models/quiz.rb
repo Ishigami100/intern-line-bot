@@ -1,5 +1,4 @@
 require 'httpclient'
-require 'utils/silhouette'
 
 class Quiz < ApplicationRecord
     CHALLENGE_UPPER_LIMIT = 5
@@ -115,13 +114,13 @@ class Quiz < ApplicationRecord
     def pokemon_name(language) #'en' 'zh-Hant' 'ja-Hrkt'
         results = pokemon_species
         name_info = results['names'].find{|name_info| name_info['language']['name'] == language}
-        if name_info? name_info['name'] : "Not Found"
+        name_info ? name_info['name'] : "Not Found"
     end
 
     def pokemon_text_jp
         results = pokemon_species
         flavor_text_entries_info = results['flavor_text_entries'].find{|flavor_text_entries_info|cflavor_text_entries_info['language']['name'] == "ja-Hrkt"}
-        if flavor_text_entries_info?  flavor_text_entries_info['flavor_text'] : "Not Found"
+        flavor_text_entries_info ?  flavor_text_entries_info['flavor_text'] : "Not Found"
     end
 
     def pokemon_type_jp
