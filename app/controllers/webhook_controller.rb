@@ -35,12 +35,12 @@ class WebhookController < ApplicationController
           else
             user.current_quiz.delete_image_gray_check
             user.current_quiz.answer(answer_text: event.message['text'])
-            if
-              user.current_quiz.reply_message == '正解！！'
-              client.reply_message(event['replyToken'],quiz.image_message_end(request.base_url))
+            if user.current_quiz.reply_message[:text] == '正解！！'
+              client.reply_message(event['replyToken'],user.current_quiz.image_message_end(request.base_url))
+              sleep(2)
               user.current_quiz.delete_image_normal_check
             end
-            client.push_message(event['replyToken'],user.current_quiz.reply_message)
+            client.push_message(line_user_id,user.current_quiz.reply_message)
           end
         end
       end

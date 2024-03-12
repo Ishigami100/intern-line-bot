@@ -69,11 +69,17 @@ class Quiz < ApplicationRecord
         }
     end
 
-    private 
-
-    def delete_image_grey_check
-        silhouette.delete_image_grey(self.pokemon_id,self.user_id)
+    def delete_image_gray_check
+        silhouette = Utils::Silhouette.new
+        silhouette.delete_image_gray(self.pokemon_id,self.user_id)
     end
+
+    def delete_image_normal_check
+        silhouette = Utils::Silhouette.new
+        silhouette.delete_image_normal(self.pokemon_id,self.user_id)
+    end
+
+    private 
 
     def self.random_pokemon_id
         rand(1..MAX_POKEMON_ID)
